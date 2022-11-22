@@ -20,6 +20,9 @@ jobs:
             archive: zip
     steps:
       - uses: actions/checkout@master
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
       - name: Compile and release
         uses: rust-build/rust-build.action@latest
         env:
