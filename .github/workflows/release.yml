@@ -22,10 +22,10 @@ jobs:
       - uses: actions/checkout@master
       - name: Compile and release
         steps:
-          - uses: rust-build/rust-build.action@latest
           - uses: actions/setup-python@v4
             with:
               python-version: "3.9"
+          - uses: rust-build/rust-build.action@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUSTTARGET: ${{ matrix.target }}
