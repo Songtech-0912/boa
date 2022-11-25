@@ -20,12 +20,12 @@ jobs:
             archive: zip
     steps:
       - uses: actions/checkout@master
+      - name: Prepare python
+        uses: actions/setup-python@v4
+          with:
+            python-version: "3.10"
       - name: Compile and release
-        steps:
-          - uses: actions/setup-python@v4
-            with:
-              python-version: "3.9"
-          - uses: rust-build/rust-build.action@latest
+        uses: rust-build/rust-build.action@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUSTTARGET: ${{ matrix.target }}
