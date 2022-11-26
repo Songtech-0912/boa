@@ -7,10 +7,11 @@ on:
 jobs:
   release:
     name: release ${{ matrix.target }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
         include:
           - target: x86_64-pc-windows-gnu
             archive: zip
@@ -36,7 +37,7 @@ jobs:
           command: build
       - name: Rename executable for platform
         run: |
-          mv target/debug/python target/debug/python-${{ matrix.target }}
+          mv target/debug/python* target/debug/python-${{ matrix.target }}
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
