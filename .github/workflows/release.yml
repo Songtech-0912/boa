@@ -8,23 +8,23 @@ on:
 
 jobs:
   release:
-    name: release ${{ matrix.target }}
+    name: release ${{ matrix.os.target }}
     runs-on: ${{ matrix.os.host }}
     strategy:
       fail-fast: true
       matrix:
         os:
-          - name: windows
+          - name: Windows
             target: x86_64-pc-windows-gnu
             exec: python.exe
             ext: ".exe"
             host: windows-latest
-          - name: linux
+          - name: Linux
             target: x86_64-unknown-linux-musl
             exec: python
             ext: ""
             host: ubuntu-latest
-          - name: macos
+          - name: macOS
             target: x86_64-apple-darwin
             exec: python
             ext: ""
@@ -47,12 +47,12 @@ jobs:
           command: build
       - name: Rename executable for ${{ matrix.os.name }}
         run: |
-          mv target/debug/${{ matrix.os.exec }} target/debug/python-${{ matrix.os.exec }}${{ matrix.os.ext }}
+          mv target/debug/${{ matrix.os.exec }} target/debug/python-${{ matrix.os.target }}${{ matrix.os.ext }}
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: python-${{ matrix.target }}
-          path: target/debug/python-${{ matrix.target }}${{ matrix.os.ext }}
+          name: python-${{ matrix.os.target }}${{ matrix.os.ext }}
+          path: target/debug/python-${{ matrix.os.target }}${{ matrix.os.ext }}
       # - name: Compile and release
       #   uses: rust-build/rust-build.action@latest
       #   env:
