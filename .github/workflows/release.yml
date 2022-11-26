@@ -1,27 +1,37 @@
 name: Release
 
+# on:
+#   release:
+#     types: [created]
 on:
-  release:
-    types: [created]
+  push
 
 jobs:
   release:
     name: release ${{ matrix.target }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.host }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-        include:
-          - target: x86_64-pc-windows-gnu
-            archive: zip
-          - target: x86_64-unknown-linux-musl
-            archive: tar.gz tar.xz
-          - target: x86_64-apple-darwin
-            archive: zip
+        os:
+          - name: windows
+            target: x86_64-pc-windows-gnu
+            exec: python.exe
+            ext: ".exe"
+            host: windows-latest
+          - name: linux
+            target: x86_64-unknown-linux-musl
+            exec: python
+            ext: ""
+            host: ubuntu-latest
+          - name: macos
+            target: x86_64-apple-darwin
+            exec: python
+            ext: ""
+            host: macos-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Prepare python
+      - uses: actions/checkout@v2
+      - name: Prepare python for ${{ matrix.os.name }}
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
@@ -31,18 +41,18 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Compile executable
+      - name: Compile executable for ${{ matrix.os.name }}
         uses: actions-rs/cargo@v1
         with:
           command: build
-      - name: Rename executable for platform
+      - name: Rename executable for ${{ matrix.os.name }}
         run: |
-          mv target/debug/python* target/debug/python-${{ matrix.target }}
+          mv target/debug/${{ matrix.os.exec }} target/debug/python-${{ matrix.os.exec }}${{ matrix.os.ext }}
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: python-${{ matrix.target }}
-          path: target/debug/python-${{ matrix.target }}
+          path: target/debug/python-${{ matrix.target }}${{ matrix.os.ext }}
       # - name: Compile and release
       #   uses: rust-build/rust-build.action@latest
       #   env:
