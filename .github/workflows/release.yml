@@ -34,11 +34,14 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
+      - name: Rename executable for platform
+        run: |
+          mv target/debug/python target/debug/python-${{ matrix.target }}
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: python
-          path: target/debug/python
+          name: python-${{ matrix.target }}
+          path: target/debug/python-${{ matrix.target }}
       # - name: Compile and release
       #   uses: rust-build/rust-build.action@latest
       #   env:
